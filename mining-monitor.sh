@@ -27,8 +27,14 @@ data=`curl -s ${mining_url}`
 #   }
 # }'
 
+if [ "${data}" == "" ]; then
+    echo "Mining API returned an empty string"
+    exit 1
+fi
+
 dead=`echo ${data} | jq -c '[ .workers | to_entries | map(select(.value.alive == false))[].key ]'`
 
 if [ "${dead}" != "[]" ]; then 
     echo "The following clusters are dead: ${dead}"
+    exit 2
 fi
