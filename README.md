@@ -1,31 +1,39 @@
-This is a simple shell script which checks mining.bitcoin.cz's JSON
+This is a simple php script which checks mining.bitcoin.cz's JSON
 api to see if any workers are no longer "alive."  It is designed to
 run as a cron job - that is, if you call it, and all of your workers
-are alive, it outputs nothing. In other 
+are alive, it outputs nothing.
 
 Setup 
 ----- 
 
-1) Install jq somewhere it is accessible in the PATH visible to
-cron. On my mac, that location is /usr/bin. 
+1) Makes sure you have php version 5.3.28 or higher
 
-jq is available here: http://stedolan.github.io/jq/
-
-2) Clone this project into a directory of your choosing.
-
-3) Provide a file in that same directory, named config.sh, which looks
-something like this:
+2) Do a recursive clone of the github repo:
 
 ```bash
-mining_url=https://mining.bitcoin.cz/accounts/profile/json/{some-api-token}
+git clone --recursive git@github.com:earlye/mining-monitor.git
 ```
 
-4) Add mining-monitor.sh to your crontab. We suggest running it every
-half hour, because we don't want to overwhelm the pool's servers, just
-get some notification that our mine is hosed.
+3) Provide a file in the same directory, named config.json, which looks
+something like this:
+
+```JSON
+{ 
+  "mining_urls" : 
+    { "{name-1}" : "https://mining.bitcoin.cz/accounts/profile/json/{mining-url-key-1}",
+      "{name-2}" : "https://mining.bitcoin.cz/accounts/profile/json/{mining-url-key-2}",
+	  /*...*/
+	  "{name-n}" : "https://mining.bitcoin.cz/accounts/profile/json/{mining-url-key-n}" }
+}
+```
+
+4) Add mining-monitor.sh.php to your crontab. We suggest running it
+every hour, so we don't want to overwhelm the pool's servers or get
+put on a blacklist for trying to do so, but still get some
+notification that our mine is hosed.
 
 ```cron
-*/30 * * * * {path}/mining-monitor.sh
+0 * * * * {path}/mining-monitor.sh.php
 ```
 
 5) cron will now send you an email if your cluster ever goes down for
@@ -41,16 +49,7 @@ better (like having it go to your gmail or your phone), well, that's
 why I went with a cron-based, open-source solution: you can figure out
 those parts without my help ;-)
 
-Troubleshooting
----------------
+History
+-------
 
-mining-monitor.sh has a line that looks like this:
-
-```bash
-data=`curl -s ${mining_url}`
-```
-
-Followed by a commented-out section which assigns a different value to
-'data'. It can be very helpful to swap those out and play with the
-data which jq parses.  Other than that, look at the output and you
-should be able to figure out what's wrong.
+2014-09-22 - ported to php to get better curl/json support.

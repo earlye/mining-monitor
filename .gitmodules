@@ -1,0 +1,3 @@
+[submodule "lib/phpede"]
+	path = lib/phpede
+	url = git@github.com:earlye/phpede.git
