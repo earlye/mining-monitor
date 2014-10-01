@@ -24,7 +24,8 @@ foreach( get_object_vars($config->mining_urls) as $name  => $url )
               }
             else
               {
-                //echo "living worker: $worker_name\n";
+                if ( posix_isatty(STDOUT) )
+                  echo "living worker: $worker_name\n";
               }
           }
 
